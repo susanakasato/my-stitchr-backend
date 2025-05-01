@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Sharp } from 'sharp';
+import sharp, { Sharp } from 'sharp';
 import { ImageSizeDto } from '../dto/imageSize.dto.js';
 import { ImageService } from './image.service.js';
 import { Pattern } from '../model/pattern.js';
@@ -14,11 +14,11 @@ export class PatternService {
     ) {}
 
     async createPattern(image: Buffer, size: ImageSizeDto): Promise<Pattern> {
-        const sharp: Sharp = await this.imageService.getResizedImage(image, size);
-        const {data, info} = await sharp.raw().toBuffer({resolveWithObject: true});
+        const resizedSharp: Sharp = await this.imageService.getResizedImage(image, size);
+        const {data, info} = await resizedSharp.raw().toBuffer({resolveWithObject: true});
         const width = info.width;
         const height = info.height;
-        const pattern = new Pattern(sharp, width, height);
+        const pattern = new Pattern(await sharp(image), resizedSharp, width, height);
         for (let y = 0; y < height; y++) {
             for (let x = 0; x < width; x++) {
                 const redIndex = (3 * width * y) + (3 * x);
@@ -38,7 +38,7 @@ export class PatternService {
         const usedColors: {
             [key: string]: PatternColor
         } = {};
-        const optimizedPattern: Pattern = new Pattern(pattern.getImage(), pattern.getWidth(), pattern.getHeight());
+        const optimizedPattern: Pattern = new Pattern(pattern.getOriginalImage(), pattern.getImage(), pattern.getWidth(), pattern.getHeight());
         pattern.getGrid().forEach((line, y) => {
             line.forEach((patternItem, x) => {
                 let currentPatternColor: PatternColor = patternItem.getPatternColor();

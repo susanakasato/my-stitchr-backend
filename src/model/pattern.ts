@@ -5,6 +5,7 @@ import { PatternColor } from "./patternColor.js";
 
 export class Pattern {
 
+    private originalImage: Sharp;
     private image: Sharp;
     private width: number;
     private height: number;
@@ -16,13 +17,18 @@ export class Pattern {
         [key: string]: SymbolType
     }
 
-    constructor(image: Sharp, width: number, height: number) {
+    constructor(originalImage: Sharp, image: Sharp, width: number, height: number) {
+        this.originalImage = originalImage;
         this.image = image;
         this.width = width;
         this.height = height;
         this.grid = Array(height).fill(Array(width).fill(null));
         this.usedItems = {};
         this.usedSymbols = {};
+    }
+
+    getOriginalImage(): Sharp {
+        return this.originalImage;
     }
 
     getImage(): Sharp {
@@ -48,7 +54,7 @@ export class Pattern {
             let i = 0;
             const symbolKeys = Object.keys(Symbol);
             while (newSymbol == "" && i < symbolKeys.length) {
-                if (this.usedSymbols[Symbol[symbolKeys[i]]]) newSymbol = Symbol[symbolKeys[i]];
+                if (!this.usedSymbols[Symbol[symbolKeys[i]]]) newSymbol = Symbol[symbolKeys[i]];
                 i++;
             }
             newItem = new PatternItem(patternColor, newSymbol);
