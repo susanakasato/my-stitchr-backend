@@ -28,15 +28,16 @@ export class PatternService {
                 pattern.addPattermItem(x, y, patternColor);
             }
         }
-        return this.optimizePattern(pattern);
+        return pattern;
+        // return this.optimizePattern(pattern);
     }
 
     optimizePattern(pattern: Pattern): Pattern {
         const changedDmcs: {
-            [key: string]: string
+            [dmc: string]: string
         } = {};
         const usedColors: {
-            [key: string]: PatternColor
+            [dmc: string]: PatternColor
         } = {};
         const optimizedPattern: Pattern = new Pattern(pattern.getOriginalImage(), pattern.getImage(), pattern.getWidth(), pattern.getHeight());
         pattern.getGrid().forEach((line, y) => {
@@ -47,7 +48,7 @@ export class PatternService {
                 if (!newPatternColor) {
                     const changedDmc = changedDmcs[currentDmc];
                     if (changedDmc) {
-                        optimizedPattern.addPattermItem(x, y, newPatternColor);
+                        newPatternColor = usedColors[changedDmc];
                     } else {
                         const similarDmcs: string[] = SimilarDmc.getSimilarDmcs(currentDmc);
                         let similarDmcsIndex = 0;

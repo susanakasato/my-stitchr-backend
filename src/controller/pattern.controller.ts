@@ -1,11 +1,9 @@
 import { PatternService } from '../service/pattern.service.js';
 import { ImageSizeDto } from "../dto/imageSize.dto.js";
 import { FileInterceptor } from '@nestjs/platform-express';
-import { Body, Controller, Get, Header, Post, Res, StreamableFile, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Header, Post, Res, StreamableFile, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { Pattern } from '../model/pattern.js';
 import PDFDocument from "pdfkit/js/pdfkit.js";
-import { createReadStream, createWriteStream, readFileSync } from 'fs';
-import { join } from 'path';
 import { PdfService } from '../service/pdf.service.js';
 
 @Controller("pattern")

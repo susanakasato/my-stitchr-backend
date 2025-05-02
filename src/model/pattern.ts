@@ -1,6 +1,6 @@
 import { Sharp } from "sharp"
 import { PatternItem } from "./patternItem.js";
-import Symbol, { SymbolType } from "./symbol.js";
+import Symbols from "./symbol.js";
 import { PatternColor } from "./patternColor.js";
 
 export class Pattern {
@@ -13,9 +13,7 @@ export class Pattern {
     private usedItems: {
         [key: string]: PatternItem
     };
-    private usedSymbols: {
-        [key: string]: SymbolType
-    }
+    private usedSymbols: string[];
 
     constructor(originalImage: Sharp, image: Sharp, width: number, height: number) {
         this.originalImage = originalImage;
@@ -24,7 +22,7 @@ export class Pattern {
         this.height = height;
         this.grid = Array(height).fill(Array(width).fill(null));
         this.usedItems = {};
-        this.usedSymbols = {};
+        this.usedSymbols = [];
     }
 
     getOriginalImage(): Sharp {
@@ -47,21 +45,24 @@ export class Pattern {
         return this.grid;
     }
 
-    addPattermItem(x: number, y: number, patternColor: PatternColor): void {
+    addPattermItem(x: number, y: number, patternColor: PatternColor): void {       
         let newItem = this.usedItems[patternColor.getDmc()];
         if (!newItem) {
-            let newSymbol: SymbolType = "";
+            let newSymbol: string = "";
             let i = 0;
-            const symbolKeys = Object.keys(Symbol);
-            while (newSymbol == "" && i < symbolKeys.length) {
-                if (!this.usedSymbols[Symbol[symbolKeys[i]]]) newSymbol = Symbol[symbolKeys[i]];
+            while (newSymbol == "" && i < Symbols.length) {
+                if (!this.usedSymbols.includes(Symbols[i])) {
+                    newSymbol = Symbols[i];
+                    this.usedSymbols.push(newSymbol);
+                }
                 i++;
             }
             newItem = new PatternItem(patternColor, newSymbol);
             this.usedItems[patternColor.getDmc()] = newItem;
         }
         newItem.addOneSticth();
-        this.grid[y][x] = newItem;
+        const newLine: PatternItem[] = [...this.grid[y]];
+        newLine[x] = newItem;
+        this.grid[y] = [...newLine];
     }
-
 }

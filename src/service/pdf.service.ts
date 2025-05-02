@@ -11,13 +11,13 @@ export class PdfService {
     private xCellPerPage: number = 50;
     private yCellPerPage: number = 70;
     private xInitPosition: number = 55;
-    private yInitPosition: number = 35;
+    private yInitPosition: number = 55;
 
 
     async createDoc(pattern: Pattern): PDFDocument {
         const doc: PDFDocument = new PDFDocument({size: "A4"});
         await this.addInitialSetup(doc, pattern.getOriginalImage());
-        this.addGrid(doc, pattern.getGrid());
+        this.addGrid(doc, pattern.getGrid(), pattern.getWidth(), pattern.getHeight());
         return doc;
     }
 
@@ -31,19 +31,35 @@ export class PdfService {
         doc.image(fileName, (doc.page.width - 250) / 2, 150, {width: 250, fit: [250, doc.page.height], valign: "top"})
     }
 
-    addGrid(doc: PDFDocument, grid: PatternItem[][]) {
-
+    addGrid(doc: PDFDocument, grid: PatternItem[][], gridWidth: number, gridHeight: number) {
+        const widthCount: number = Math.ceil(gridWidth / this.xCellPerPage);
+        const heightCount: number = Math.ceil(gridHeight / this.yCellPerPage);
+        for (let yCount = 0; yCount < heightCount; yCount++) {
+            for (let xCount = 0; xCount < widthCount; xCount++) {
+                doc.addPage();
+                for (let y = yCount * this.yCellPerPage; y < (yCount + 1) * this.yCellPerPage && y < gridHeight; y++) {
+                    for (let x = xCount * this.xCellPerPage; x < (xCount + 1) * this.xCellPerPage && x < gridWidth; x++) {
+                        const item = grid[y][x]
+                        this.addStitchItem(doc, (x - xCount * this.xCellPerPage) * this.cellSize, (y - yCount * this.yCellPerPage) * this.cellSize, item.getPatternColor().getColor().hex(), item.getSymbol());
+                    }
+                }
+                const pageGridWidth = xCount == widthCount - 1 ? gridWidth - (xCount * this.xCellPerPage) : this.xCellPerPage;
+                const pageGridHeight = yCount == heightCount - 1 ? gridHeight - (yCount * this.yCellPerPage) : this.yCellPerPage;
+                this.addGridIndexes(doc, pageGridWidth, pageGridHeight, xCount * this.xCellPerPage, yCount * this.yCellPerPage);
+            }
+        }
     }
 
     addStitchItem(doc: PDFDocument, x: number, y: number, colorHex: string, symbol: string) {
         doc.rect(this.xInitPosition + x, this.yInitPosition + y, this.cellSize, this.cellSize)
             .fillColor(colorHex)
             .strokeColor("gray")
-            .fillOpacity(0.8)
+            .fillOpacity(0.6)
             .fillAndStroke();
-        doc.fontSize(8)
+        doc.fontSize(6)
             .fillColor("black")
-            .text(symbol, this.xInitPosition + 2, this.yInitPosition + 2);
+            .fillOpacity(1)
+            .text(symbol, this.xInitPosition + x, this.yInitPosition + y + 3, {width: 10, align: "center"});
     }
 
     addGridIndexes(doc: PDFDocument, gridWidth: number, gridHeight: number, xInitIndex: number, yInitIndex) {

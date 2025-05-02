@@ -1,10 +1,9 @@
 import { PatternColor } from "./patternColor.js";
-import { SymbolType } from "./symbol.js";
 
 export class PatternItem {
 
     private patternColor: PatternColor;
-    private symbol: SymbolType;
+    private symbol: string;
     private stitchCount: number;
 
     constructor(patternColor: PatternColor, symbol: string) {
@@ -17,7 +16,7 @@ export class PatternItem {
         return this.patternColor;
     }
 
-    getSymbol(): SymbolType {
+    getSymbol(): string {
         return this.symbol;
     }
 
@@ -28,4 +27,5 @@ export class PatternItem {
     addOneSticth(): void {
         this.stitchCount++;
     }
+
 }
