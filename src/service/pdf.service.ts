@@ -12,12 +12,15 @@ export class PdfService {
     private yCellPerPage: number = 70;
     private xInitPosition: number = 55;
     private yInitPosition: number = 55;
+    private indexCellWidth = 46;
+    private indexCellHeight = 18;
 
 
     async createDoc(pattern: Pattern): PDFDocument {
         const doc: PDFDocument = new PDFDocument({size: "A4"});
         await this.addInitialSetup(doc, pattern.getOriginalImage());
         this.addGrid(doc, pattern.getGrid(), pattern.getWidth(), pattern.getHeight());
+        this.addColorsPage(doc, pattern.getPatternItemsIndex());
         return doc;
     }
 
@@ -83,5 +86,49 @@ export class PdfService {
                     }
                 }
         }
+    }
+
+    addColorsPage(doc: PDFDocument, patternItemsIndex: {[dmc: string]: PatternItem}) {
+        const dmcs = Object.keys(patternItemsIndex);
+        const itemsPerColumn = 40;
+        const columns = Math.ceil(dmcs.length / itemsPerColumn);
+        const columnSpaceBetween = 30;
+
+        doc.addPage();
+        for (let columnIndex = 0; columnIndex < columns; columnIndex++) {
+            this.addColorCell(doc, columnIndex * (3 * this.indexCellWidth + columnSpaceBetween),
+                0 - this.indexCellHeight, "DMC");
+            this.addColorCell(doc, this.indexCellWidth + columnIndex * (3 * this.indexCellWidth + columnSpaceBetween),
+                0 - this.indexCellHeight, "Symbol");
+            this.addColorCell(doc, 2 * this.indexCellWidth + columnIndex * (3 * this.indexCellWidth + columnSpaceBetween),
+                0 - this.indexCellHeight, "Count");
+            for (let itemIndex = 0; itemIndex < itemsPerColumn && itemIndex + columnIndex * itemsPerColumn < dmcs.length; itemIndex++) {
+                const item = patternItemsIndex[dmcs[itemIndex + columnIndex * itemsPerColumn]];
+                this.addColorCell(doc, columnIndex * (3 * this.indexCellWidth + columnSpaceBetween),
+                    itemIndex * this.indexCellHeight, 
+                    item.getPatternColor().getDmc());
+                this.addColorCell(doc, this.indexCellWidth + columnIndex * (3 * this.indexCellWidth + columnSpaceBetween),
+                    itemIndex * this.indexCellHeight, 
+                    "");
+                this.addStitchItem(doc, this.indexCellWidth + columnIndex * (3 * this.indexCellWidth + columnSpaceBetween) + 18,
+                    itemIndex * this.indexCellHeight + 4,
+                    item.getPatternColor().getColor().hex(),
+                    item.getSymbol())
+                this.addColorCell(doc, 2 * this.indexCellWidth + columnIndex * (3 * this.indexCellWidth + columnSpaceBetween),
+                    itemIndex * this.indexCellHeight, 
+                    item.getStitchCount());
+            }
+        }
+    }
+
+    addColorCell(doc, x, y, text) {
+        doc.fillOpacity(1)
+            .fillColor("white")
+            .strokeColor("black")
+            .rect(this.xInitPosition + x, this.yInitPosition + y, this.indexCellWidth, this.indexCellHeight)
+            .fillAndStroke();
+        doc.fillColor("black")
+            .fontSize(10)
+            .text(text, this.xInitPosition + x, this.yInitPosition + y + 5, {width: this.indexCellWidth, align: "center"})
     }
 }

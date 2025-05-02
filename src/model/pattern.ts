@@ -45,6 +45,10 @@ export class Pattern {
         return this.grid;
     }
 
+    getPatternItemsIndex(): {[dmc: string]: PatternItem} {
+        return this.usedItems;
+    }
+
     addPattermItem(x: number, y: number, patternColor: PatternColor): void {       
         let newItem = this.usedItems[patternColor.getDmc()];
         if (!newItem) {
