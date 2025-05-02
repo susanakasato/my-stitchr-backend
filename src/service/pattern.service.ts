@@ -5,6 +5,7 @@ import { ImageService } from './image.service.js';
 import { Pattern } from '../model/pattern.js';
 import { PatternColor } from '../model/patternColor.js';
 import { SimilarDmc } from './similarDmc.service.js';
+import { first } from 'rxjs';
 
 @Injectable()
 export class PatternService {
@@ -28,8 +29,7 @@ export class PatternService {
                 pattern.addPattermItem(x, y, patternColor);
             }
         }
-        return pattern;
-        // return this.optimizePattern(pattern);
+        return this.optimizePattern(pattern);
     }
 
     optimizePattern(pattern: Pattern): Pattern {
@@ -46,17 +46,17 @@ export class PatternService {
                 const currentDmc: string = currentPatternColor.getDmc();
                 let newPatternColor: PatternColor = usedColors[currentDmc];
                 if (!newPatternColor) {
-                    const changedDmc = changedDmcs[currentDmc];
+                    const changedDmc: string = changedDmcs[currentDmc];
                     if (changedDmc) {
                         newPatternColor = usedColors[changedDmc];
                     } else {
                         const similarDmcs: string[] = SimilarDmc.getSimilarDmcs(currentDmc);
                         let similarDmcsIndex = 0;
-                        while (similarDmcsIndex < SimilarDmc.length && !newPatternColor) {
+                        while (similarDmcsIndex < similarDmcs.length && !newPatternColor) {
                             const similarUsedColor = usedColors[similarDmcs[similarDmcsIndex]];
                             if (similarUsedColor) {
                                 newPatternColor = similarUsedColor;
-                                changedDmc[currentDmc] = similarUsedColor.getDmc();
+                                changedDmcs[currentDmc] = similarUsedColor.getDmc();
                             }
                             similarDmcsIndex++;
                         }
@@ -69,7 +69,6 @@ export class PatternService {
                 optimizedPattern.addPattermItem(x, y, newPatternColor);
             })
         })
-
         return optimizedPattern;
     } 
 
