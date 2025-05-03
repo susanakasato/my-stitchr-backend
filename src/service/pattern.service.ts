@@ -5,7 +5,6 @@ import { ImageService } from './image.service.js';
 import { Pattern } from '../model/pattern.js';
 import { PatternColor } from '../model/patternColor.js';
 import { SimilarDmc } from './similarDmc.service.js';
-import { first } from 'rxjs';
 
 @Injectable()
 export class PatternService {
