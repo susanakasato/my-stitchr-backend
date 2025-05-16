@@ -4,7 +4,7 @@ import { ImageSizeDto } from '../dto/imageSize.dto.js';
 import { ImageService } from './image.service.js';
 import { Pattern } from '../model/pattern.js';
 import { PatternColor } from '../model/patternColor.js';
-import { SimilarDmc } from './similarDmc.service.js';
+import { SimilarDmcService } from './similarDmc.service.js';
 
 @Injectable()
 export class PatternService {
@@ -49,7 +49,7 @@ export class PatternService {
                     if (changedDmc) {
                         newPatternColor = usedColors[changedDmc];
                     } else {
-                        const similarDmcs: string[] = SimilarDmc.getSimilarDmcs(currentDmc);
+                        const similarDmcs: string[] = SimilarDmcService.getSimilarDmcs(currentDmc);
                         let similarDmcsIndex = 0;
                         while (similarDmcsIndex < similarDmcs.length && !newPatternColor) {
                             const similarUsedColor = usedColors[similarDmcs[similarDmcsIndex]];

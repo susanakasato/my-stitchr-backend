@@ -1,3 +1,3 @@
-export class SimilarDmc {
+export class SimilarDmcDto {
     [key: string]: string[]
 }

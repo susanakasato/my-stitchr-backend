@@ -1,8 +1,9 @@
 import { readFileSync } from "fs";
+import { SimilarDmcDto } from "../../src/dto/similarDmc.dto.ts";
 
-export class SimilarDmc {
+export class SimilarDmcService {
     
-    static data: SimilarDmc;
+    static data: SimilarDmcDto;
 
     static {
         this.data = JSON.parse(readFileSync("resource/similar-dmc.json").toString());
