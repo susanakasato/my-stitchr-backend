@@ -5,6 +5,9 @@ import { RgbToDmcService } from "src/service/rgbToDmc.service.js";
 import { SimilarDmcService } from "src/service/similarDmc.service.js";
 import { describe, expect, it } from "vitest";
 import { Test, TestingModule } from "@nestjs/testing";
+import { ImageService } from "src/service/image.service.js";
+import sharp, { Metadata, Sharp } from "sharp";
+import { create } from "domain";
 
 describe("SERVICE VITEST TESTING", () => {
     it("RGB to DMC Service", () => {
@@ -59,5 +62,25 @@ describe("SERVICE VITEST TESTING", () => {
         expect(optimizedPattern.getGrid()[0][1].getSymbol()).toBe("A");
         expect(optimizedPattern.getGrid()[1][0].getSymbol()).toBe("B");
         expect(optimizedPattern.getGrid()[1][1].getSymbol()).toBe("A");
+    });
+
+    it("Image Service", async () => {
+        const moduleRef: TestingModule = await Test.createTestingModule({
+            providers: [ImageService]
+        }).compile();
+        const service: ImageService = moduleRef.get<ImageService>(ImageService);
+
+        const image: Buffer = await sharp({
+            create: {
+                width: 20,
+                height: 20,
+                channels: 3,
+                background: {r: 255, g: 0, b: 0}
+            }
+        }).png().toBuffer();
+        const newImageSharp: Sharp = await service.getResizedImage(image, {width: "10", height: "10"});
+        const newImageSharpMetadata: Metadata = await newImageSharp.metadata();
+        expect(newImageSharpMetadata.width).toBe(10);
+        expect(newImageSharpMetadata.height).toBe(10);
     });
 });

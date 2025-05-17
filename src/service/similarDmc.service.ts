@@ -1,5 +1,5 @@
 import { readFileSync } from "fs";
-import { SimilarDmcDto } from "../../src/dto/similarDmc.dto.ts";
+import { SimilarDmcDto } from "../../src/dto/similarDmc.dto.js";
 
 export class SimilarDmcService {
     
