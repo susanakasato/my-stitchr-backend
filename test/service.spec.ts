@@ -1,8 +1,8 @@
-import { Pattern } from "src/model/pattern.ts";
-import { PatternColor } from "src/model/patternColor.ts";
-import { PatternService } from "src/service/pattern.service.ts";
-import { RgbToDmcService } from "src/service/rgbToDmc.service.ts";
-import { SimilarDmcService } from "src/service/similarDmc.service.ts";
+import { Pattern } from "src/model/pattern.js";
+import { PatternColor } from "src/model/patternColor.js";
+import { PatternService } from "src/service/pattern.service.js";
+import { RgbToDmcService } from "src/service/rgbToDmc.service.js";
+import { SimilarDmcService } from "src/service/similarDmc.service.js";
 import { describe, expect, it } from "vitest";
 import { Test, TestingModule } from "@nestjs/testing";
 
