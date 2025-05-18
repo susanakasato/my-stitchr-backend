@@ -22,11 +22,14 @@ export class PatternController {
     if (!image.mimetype.startsWith("image/")) {
       throw new HttpException("Ops! This image format is not allowed.", HttpStatus.BAD_REQUEST);
     }
+    if (typeof body.height != "number" || typeof body.width != "number") {
+      throw new HttpException("Ops! The value provided to the pattern size must be a number.", HttpStatus.BAD_REQUEST);
+    }
     const pattern: Pattern = await this.patternService.createPattern(image.buffer, body);
     const doc: PDFDocument = await this.pdfService.createDoc(pattern);
     doc.pipe(res)
     doc.end();    
-    return "Success! Your cross stitch pattern was created. Available in PDF.";
+    return "Success! Your cross stitch pattern was created and it's available in PDF.";
   }
 }
 

@@ -1,4 +1,4 @@
 export class ImageSizeDto {
-    width: string;
-    height: string
+    width: number;
+    height: number
 }
