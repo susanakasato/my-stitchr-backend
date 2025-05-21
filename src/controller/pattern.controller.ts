@@ -19,13 +19,17 @@ export class PatternController {
   @Header("Content-Type", "application/pdf")
   @Header("Content-Disposition", "attachment; filename=pattern.pdf")
   async createPattern(@UploadedFile() image: Express.Multer.File, @Body() body: ImageSizeDto, @Res() res: Response): Promise<string> {
+    let width, height;    
     if (!image.mimetype.startsWith("image/")) {
       throw new HttpException("Ops! This image format is not allowed.", HttpStatus.BAD_REQUEST);
     }
-    if (typeof body.height != "number" || typeof body.width != "number") {
+    try {
+      width = Number(body.width);
+      height = Number(body.height);
+    } catch (e) {
       throw new HttpException("Ops! The value provided to the pattern size must be a number.", HttpStatus.BAD_REQUEST);
     }
-    const pattern: Pattern = await this.patternService.createPattern(image.buffer, body);
+    const pattern: Pattern = await this.patternService.createPattern(image.buffer, {width: width, height: height});
     const doc: PDFDocument = await this.pdfService.createDoc(pattern);
     doc.pipe(res)
     doc.end();    
