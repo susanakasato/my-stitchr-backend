@@ -90,7 +90,7 @@ export class PdfService {
 
     addColorsPage(doc: PDFDocument, patternItemsIndex: {[dmc: string]: PatternItem}) {
         const dmcs = Object.keys(patternItemsIndex);
-        const itemsPerColumn = 40;
+        const itemsPerColumn = 35;
         const columns = Math.ceil(dmcs.length / itemsPerColumn);
         const columnSpaceBetween = 30;
 
